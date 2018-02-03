@@ -35,4 +35,9 @@
 9) git clone https://github.com/tum-vision/lsd_slam.git lsd_slam
 10) Remove all quotation marks(') from lsd_slam/lsd_slam_viewer/cfg/LSDSLAMViewerParams.cfg
 11) Remove all quotation marks(') from lsd_slam/lsd_slam_core/cfg/LSDDebugParams.cfg
-12) rosmake lsd_slam
+12) Uncomment the following lines in lsd_slam_core/CMakeLists.txt
+          #add_subdirectory(${PROJECT_SOURCE_DIR}/thirdparty/openFabMap)
+          #include_directories(${PROJECT_SOURCE_DIR}/thirdparty/openFabMap/include)
+          #add_definitions("-DHAVE_FABMAP")
+          #set(FABMAP_LIB openFABMAP )
+13) rosmake lsd_slam
