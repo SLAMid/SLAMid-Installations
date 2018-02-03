@@ -1,0 +1,38 @@
+# Pre-reqs
+1) sudo apt-get update
+2) sudo apt-get upgrade
+
+# Installing ROS Indigo
+1) sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
+2) sudo apt-key adv --keyserver hkp://ha.pool.sks-keyservers.net:80 --recv-key 421C365BD9FF1F717815A3895523BAEEB01FA116
+3) sudo apt-get update
+4) sudo apt-get install ros-indigo-desktop-full
+5) sudo rosdep init
+6) rosdep update
+7) echo "source /opt/ros/indigo/setup.bash" >> ~/.bashrc
+8) source ~/.bashrc
+9) sudo apt-get install python-rosinstall
+
+# Download OpenCV source files(tar.gz)
+1) https://github.com/opencv/opencv/releases/tag/2.4.8
+2) sudo apt-get install build-essential cmake
+3) cd into the extracted opencv files
+4) mkdir build
+5) cd build
+6) cmake ../
+7) sudo make
+8) sudo make install
+
+# Installing LSD-SLAM
+1) mkdir ~/rosbuild_ws
+2) cd ~/rosbuild_ws
+3) rosws init . /opt/ros/indigo
+4) mkdir package_dir
+5) rosws set ~/rosbuild_ws/package_dir -t .
+6) echo "source ~/rosbuild_ws/setup.bash" >> ~/.bashrc
+7) cd package_dir
+8) sudo apt-get install ros-indigo-libg2o ros-indigo-cv-bridge liblapack-dev libblas-dev freeglut3-dev libqglviewer-dev libsuitesparse-dev libx11-dev
+9) git clone https://github.com/tum-vision/lsd_slam.git lsd_slam
+10) Remove all quotation marks(') from lsd_slam/lsd_slam_viewer/cfg/LSDSLAMViewerParams.cfg
+11) Remove all quotation marks(') from lsd_slam/lsd_slam_core/cfg/LSDDebugParams.cfg
+12) rosmake lsd_slam
