@@ -30,3 +30,8 @@ cmake -D CMAKE_BUILD_TYPE=RELEASE \
 make -j4
 sudo make install
 sudo ldconfig
+
+ls -l /usr/local/lib/python3.4/dist-packages/
+cd /usr/local/lib/python3.4/dist-packages/
+sudo mv cv2.cpython-34m.so cv2.so
+#ln -s /usr/local/lib/python3.4/site-packages/cv2.so cv2.so
