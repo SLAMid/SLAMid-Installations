@@ -1,26 +1,29 @@
-import sys, time
+# System and general imports
+import sys, time, os, sys
 import numpy as np
-from scipy.ndimage import filters
 import cv2
-import roslib
-import rospy
 
-import os
-import sys
+
+# Imports for MASK-RCNN
 import coco
 import utils
 import model as modellib
 
+# Imports for ROS
+import roslib
+import rospy
 from sensor_msgs.msg import Image
 
+# Additional data?
 VERBOSE=False
 
+# Generates array of random colors for identified objects
 def random_colors(N):
     np.random.seed(1)
     colors = [tuple(255 * np.random.rand(3)) for _ in range(N)]
     return colors
 
-
+# Applies the colored mask to object in image
 def apply_mask(image, mask, color, alpha=0.5):
     """apply mask to image"""
     for n, c in enumerate(color):
@@ -31,7 +34,7 @@ def apply_mask(image, mask, color, alpha=0.5):
         )
     return image
 
-
+# Adds the mask, name, and bounding box around the object in the image
 def display_instances(image, boxes, masks, ids, names, scores):
     """
         take the image and results and apply the mask, box, and Label
@@ -62,7 +65,7 @@ def display_instances(image, boxes, masks, ids, names, scores):
 
     return image
 
-
+# Preliminary information for keras and tensorflow model
 ROOT_DIR = os.getcwd()
 MODEL_DIR = os.path.join(ROOT_DIR, "logs")
 COCO_MODEL_PATH = os.path.join(ROOT_DIR, "mask_rcnn_coco.h5")
@@ -75,11 +78,10 @@ class InferenceConfig(coco.CocoConfig):
 config = InferenceConfig()
 config.display()
 
-
-
-
+# Class for ROS to subrscibe and publish ROS topics
 class image_feature:
 
+    # Init function to initialize the publisher and subscriber
     def __init__(self):
         '''Initialize ros publisher, ros subscriber'''
         # topic where we publish
@@ -93,7 +95,7 @@ class image_feature:
         #if VERBOSE :
             #print "subscribed to /camera/image/compressed"
 
-
+    # Callback funciton to define the operation on the subscribed data
     def callback(self, ros_data):
         '''Callback function of subscribed topic.
         Here images get converted and features detected'''
