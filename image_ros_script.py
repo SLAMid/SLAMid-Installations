@@ -11,7 +11,7 @@ import coco
 import utils
 import model as modellib
 
-from sensor_msgs.msg import CompressedImage
+from sensor_msgs.msg import Image
 
 VERBOSE=False
 
@@ -83,13 +83,13 @@ class image_feature:
     def __init__(self):
         '''Initialize ros publisher, ros subscriber'''
         # topic where we publish
-        self.image_pub = rospy.Publisher("/segmentation/image_raw/compressed",
-            CompressedImage)
+        self.image_pub = rospy.Publisher("/segmentation/image_raw",
+            Image)
         # self.bridge = CvBridge()
 
         # subscribed Topic
-        self.subscriber = rospy.Subscriber("/usb_cam/image_raw/compressed",
-            CompressedImage, self.callback,  queue_size = 1)
+        self.subscriber = rospy.Subscriber("/usb_cam/image_raw",
+            Image, self.callback,  queue_size = 1)
         #if VERBOSE :
             #print "subscribed to /camera/image/compressed"
 
@@ -135,8 +135,8 @@ class image_feature:
         #cv2.imshow('cv_img', image_np)
         #cv2.waitKey(2)
 
-        #### Create CompressedIamge ####
-        msg = CompressedImage()
+        #### Create Iamge ####
+        msg = Image()
         msg.header.stamp = rospy.Time.now()
         msg.format = "jpeg"
         msg.data = np.array(cv2.imencode('.jpg', image_np)[1]).tostring()
