@@ -1,8 +1,7 @@
 import cv2
 import numpy as np
-import rospy
-from sensor_msgs.msg import Image
-from cv_bridge import CvBridge
+# import tensorboard
+# import tensorflow as tf
 
 
 def random_colors(N):
@@ -48,7 +47,7 @@ def display_instances(image, boxes, masks, ids, names, scores):
         # print(label, " + ", color)
 
         if(label == 'person'):
-            color = (0,0,0) # Black
+            color = (255,0,0) # Blue
         else:
             if(score.item() > 0.9):
                 color = (0,255,0) # Green
@@ -63,7 +62,8 @@ def display_instances(image, boxes, masks, ids, names, scores):
 
     return image
 
-def seg_main():
+
+if __name__ == '__main__':
     """
         test everything
     """
@@ -108,46 +108,39 @@ def seg_main():
         'teddy bear', 'hair drier', 'toothbrush'
     ]
 
-    capture = bridge.imgmsg_to_cv2(data, "bgr8")
+    capture = cv2.VideoCapture(0)
+    # capture =cv2.VideoCapture('0002-20170519-2.mp4')
+    # length = int(capture.get(cv2.CAP_PROP_FRAME_COUNT))
 
     # these 2 lines can be removed if you dont have a 1080p camera.
     capture.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
     capture.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
-    ret, frame = capture.read()
 
-    frame = cv2.resize(frame, (480*2, 340*2))
+    # Define the codec and create VideoWriter object
+    # fourcc = cv2.cv.CV_FOURCC(*'X264')
+    # fourcc = cv2.VideoWriter_fourcc(*'XVID')
+    # out = cv2.VideoWriter('output.mp4',fourcc, 20.0, (int(480*8),int(340*8)))
 
-    results = model.detect([frame], verbose=0)
-    r = results[0]
-    frame = display_instances(
-        frame, r['rois'], r['masks'], r['class_ids'], class_names, r['scores']
-    )
+    # i = 0
+    while True:
+        ret, frame = capture.read()
 
-    cv2.imshow('frame', frame)
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
+        frame = cv2.resize(frame, (480*2, 340*2))
 
-    publisher(capture)
+        results = model.detect([frame], verbose=0)
+        r = results[0]
+        frame = display_instances(
+            frame, r['rois'], r['masks'], r['class_ids'], class_names, r['scores']
+        )
+
+
+
+        cv2.imshow('frame', frame)
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+
+
 
 
     capture.release()
     cv2.destroyAllWindows()
-
-def publisher(image):
-
-    image_message = cv2_to_imgmsg(cv_image, encoding="passthrough")
-    pub = rospy.Publisher('segment-image', Image, image_message)
-    rospy.init_node('seg-image')
-    pub.publish(image_message)
-
-
-if __name__ == '__main__':
-
-    rospy.init_node('image_segmenter')
-
-    bridge = CvBridge()
-    startWindowThread()
-
-    image_sub = rospy.Subscriber("/usb_cam/image_raw",Image, seg_main)
-
-    rospy.spin()
