@@ -1,8 +1,5 @@
 import cv2
 import numpy as np
-# import tensorboard
-# import tensorflow as tf
-
 
 def random_colors(N):
     np.random.seed(1)
@@ -21,12 +18,12 @@ def apply_mask(image, mask, color, alpha=0.5):
     return image
 
 
-def display_instances(image, boxes, masks, ids, names, scores):
+def display_instances(image, boxes, masks, ids, names, scores, colors, class_colors):
     """
         take the image and results and apply the mask, box, and Label
     """
     n_instances = boxes.shape[0]
-    colors = random_colors(n_instances)
+    #colors = random_colors(n_instances)
 
     if not n_instances:
         print('NO INSTANCES TO DISPLAY')
@@ -39,6 +36,7 @@ def display_instances(image, boxes, masks, ids, names, scores):
     #
         y1, x1, y2, x2 = boxes[i]
         label = names[ids[i]]
+        thiscolor = order[label]
         score = scores[i] if scores is not None else None
         caption = '{} {:.2f}'.format(label, score) if score else label
         mask = masks[:, :, i]
@@ -107,7 +105,16 @@ if __name__ == '__main__':
         'sink', 'refrigerator', 'book', 'clock', 'vase', 'scissors',
         'teddy bear', 'hair drier', 'toothbrush'
     ]
-
+    colors = []
+    for i in class_names:
+        color = tuple(np.random.choice(range(256), size=3))
+        while(color in colors):
+            color = tuple(np.random.choice(range(256), size=3))
+        colors.append(color)
+    class_colors = {}
+    for i in range(0,len(class_names)):
+        class_colors[class_names[i]] = colors[i]
+    
     capture = cv2.VideoCapture(0)
     # capture =cv2.VideoCapture('0002-20170519-2.mp4')
     # length = int(capture.get(cv2.CAP_PROP_FRAME_COUNT))
@@ -130,7 +137,7 @@ if __name__ == '__main__':
         results = model.detect([frame], verbose=0)
         r = results[0]
         frame = display_instances(
-            frame, r['rois'], r['masks'], r['class_ids'], class_names, r['scores']
+            frame, r['rois'], r['masks'], r['class_ids'], class_names, r['scores'], colors, class_colors
         )
 
 
